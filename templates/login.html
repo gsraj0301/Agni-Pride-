@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport">
+  <title>Login — Agni Pride</title>
+
+  <style>
+    /* ==================================================
+               Responsive Login Page Stylesheet
+               Professional educational design matching Agni Connect
+               - Mobile-first approach
+               - Centered card layout with form inputs
+               - min-width breakpoints for tablet and desktop
+               ================================================== */
+
+    :root {
+      --primary: #1e3a8a;
+      --primary-light: #2563eb;
+      --primary-dark: #1e3a8a;
+      --accent: #0ea5e9;
+      --accent-light: #06b6d4;
+      --success: #16a34a;
+      --text-dark: #0f172a;
+      --text-light: #f8fafc;
+      --text-muted: #64748b;
+      --bg-white: #ffffff;
+      --bg-soft: #f8fafc;
+      --bg-page: #e5edf7;
+      --border-light: rgba(15, 23, 42, 0.08);
+      --border-input: rgba(15, 23, 42, 0.16);
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
+      --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.12);
+      --shadow-lg: 0 18px 40px rgba(15, 23, 42, 0.16);
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    /* ===== BODY & BACKGROUND ===== */
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background: linear-gradient(135deg, #e5edf7 0%, #e0e7ff 45%, #f5f5fb 100%);
+      color: var(--text-dark);
+      padding: 1.5rem;
+      line-height: 1.6;
+      display: block;
+      position: relative;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Decorative gradient background overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* ===== LOGIN CONTAINER ===== */
+    .login-wrapper {
+      width: 100%;
+      max-width: 400px;
+      position: relative;
+      z-index: 1;
+      margin: 2.5rem auto;
+      animation: fadeInUp 0.8s ease-out;
+    }
+
+    /* ===== LOGIN CARD ===== */
+    .login-card {
+      background: var(--bg-white);
+      border-radius: var(--radius);
+      padding: 2.25rem 1.75rem;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid rgba(148, 163, 184, 0.15);
+    }
+
+    /* ===== HEADER SECTION ===== */
+    .login-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      animation: slideInDown 0.6s ease-out;
+    }
+
+    .login-title {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.75rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.02em;
+    }
+
+    .login-subtitle {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+
+
+    /* ===== FORM SECTION ===== */
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      animation: slideUp 0.8s ease-out 0.2s both;
+    }
+
+    /* Form group for consistent spacing */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    /* ===== LABELS ===== */
+    .form-label {
+      margin: 0;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      letter-spacing: 0.3px;
+    }
+
+    /* ===== INPUT FIELDS ===== */
+    .form-input {
+      padding: 0.85rem 1rem;
+      border: 2px solid var(--border-input);
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      color: var(--text-dark);
+      background: var(--bg-white);
+      transition: all 0.3s ease;
+      letter-spacing: 0.3px;
+    }
+
+    .site-footer {
+      text-align: center;
+      padding: 16px 10px;
+      font-size: 12px;
+      color: #94a3b8;
+      border-top: 1px solid rgba(148, 163, 184, 0.35);
+      width: 100%;
+      margin-top: 40px;
+    }
+
+
+    /* Input focus state */
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      background: var(--bg-soft);
+    }
+
+    /* Input placeholder styling */
+    .form-input::placeholder {
+      color: var(--text-muted);
+      opacity: 0.7;
+    }
+
+    /* ===== LOGIN BUTTON ===== */
+    .btn-login {
+      padding: 0.95rem 2rem;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      border: 0;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--primary-light) 0%, var(--accent) 100%);
+      color: var(--bg-white);
+      box-shadow: var(--shadow-md);
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      margin-top: 0.5rem;
+      text-transform: uppercase;
+    }
+
+    /* Button ripple effect on hover */
+    .btn-login::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .btn-login:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 28px rgba(30, 64, 175, 0.35);
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--accent-light) 100%);
+    }
+
+    .btn-login:active {
+      transform: translateY(-1px);
+    }
+
+    .btn-login:active::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    /* ===== FOOTER SECTION ===== */
+    .login-footer {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      text-align: center;
+      animation: fadeInUp 0.8s ease-out 0.4s both;
+    }
+
+    .login-footer-text {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* ===== REGISTER LINK ===== */
+    .register-link {
+      color: var(--primary-light);
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      position: relative;
+      display: inline-block;
+      margin-left: 0.3rem;
+    }
+
+    .flashes {
+      color: #991b1b;
+      text-align: center;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 12px;
+    }
+
+    .flashes.error {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+    }
+
+    .register-link::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--primary-light), var(--accent));
+      transition: width 0.3s ease;
+    }
+
+    .register-link:hover {
+      color: var(--accent);
+    }
+
+    .register-link:hover::after {
+      width: 100%;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes slideInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ===== TABLET (700px+) ===== */
+    @media (min-width: 700px) {
+      body {
+        padding: 2rem;
+      }
+
+      .login-card {
+        padding: 2.5rem 2rem;
+      }
+
+      .login-title {
+        font-size: 2rem;
+      }
+
+      .login-subtitle {
+        font-size: 0.95rem;
+      }
+
+      .form-input {
+        padding: 0.95rem 1.1rem;
+        font-size: 1rem;
+      }
+
+      .btn-login {
+        padding: 1rem 2.25rem;
+        font-size: 1rem;
+      }
+    }
+
+    /* ===== DESKTOP (1000px+) ===== */
+    @media (min-width: 1000px) {
+      body {
+        padding: 2.5rem;
+        background: linear-gradient(135deg, #e0f2fe 0%, #e0e7ff 50%, #fce7f3 100%);
+      }
+
+      .login-wrapper {
+        max-width: 450px;
+      }
+
+      .login-card {
+        padding: 3rem 2.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+      }
+
+      .login-title {
+        font-size: 2.25rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .login-subtitle {
+        font-size: 1rem;
+      }
+
+      .form-input {
+        padding: 1rem 1.2rem;
+        font-size: 1.05rem;
+      }
+
+      .btn-login {
+        padding: 1.1rem 2.5rem;
+        font-size: 1.05rem;
+      }
+    }
+
+    /* ===== ACCESSIBILITY ===== */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Main login container with centered card layout -->
+  <div class="login-wrapper">
+    <!-- Login card: contains header, form, and footer -->
+    <div class="login-card">
+
+      <!-- Header section with title and subtitle -->
+      <div class="login-header">
+        <h1 class="login-title">Login</h1>
+        <p class="login-subtitle">Welcome back to Agni Pride</p>
+      </div>
+
+      <!-- Login form: email and password inputs with submit button -->
+      <form class="login-form" action="/api/login" method="POST">
+
+        <!-- College email input group -->
+        <div class="form-group">
+          <label for="email" class="form-label">College Email</label>
+          <input type="email" id="email" name="email" class="form-input" placeholder="your.name@college.edu" required
+            autocomplete="email">
+        </div>
+
+        <!-- Password input group -->
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" id="password" name="password" class="form-input" placeholder="Enter your password"
+            required autocomplete="current-password">
+        </div>
+
+        <!-- Login button with gradient background and hover effects -->
+        <button type="submit" class="btn-login">Login</button>
+      </form>
+
+      <!-- Footer section with register link -->
+      <div class="login-footer">
+        <p class="login-footer-text">
+          Don't have an account?
+          <a href="/register" class="register-link">Register here</a>
+        </p>
+      </div>
+
+    </div>
+    <footer class="site-footer">
+      © 2026 Agni AI DS. Built by Raj G. All rights reserved.
+    </footer>
+  </div>
+</body>
+
+</html>
