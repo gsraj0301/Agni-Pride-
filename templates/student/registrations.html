@@ -578,10 +578,6 @@
           btn.textContent = 'Save';
         }, 2500);
 
-        const badge = card.querySelector('.reg-status');
-        badge.className = 'reg-status ' + status;
-        badge.textContent = status;
-
         showToast('Status updated to ' + status);
       } catch (err) {
         alert(err.message || 'Something went wrong');
