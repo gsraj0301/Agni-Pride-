@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Registrations — Agni PRIDE</title>
+
+  <style>
+    :root {
+      --primary: #1e40af;
+      --primary-light: #3b82f6;
+      --primary-dark: #1e3a8a;
+      --accent: #0ea5e9;
+      --accent-light: #06b6d4;
+      --success: #10b981;
+      --text-dark: #0f172a;
+      --text-muted: #64748b;
+      --bg-white: #ffffff;
+      --bg-soft: #f8fafc;
+      --border-light: rgba(15, 23, 42, 0.08);
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+      --shadow-md: 0 4px 12px rgba(30, 64, 175, 0.12);
+      --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { min-height: 100%; overflow-x: hidden; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f0e7ff 100%);
+      color: var(--text-dark);
+      line-height: 1.6;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* ===== NAVBAR ===== */
+    .navbar {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--accent) 100%);
+      color: white;
+      padding: 0 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-md);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      min-height: 60px;
+    }
+
+    .navbar-left {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-decoration: none;
+      color: white;
+    }
+
+    .navbar-brand svg { flex-shrink: 0; }
+
+    .navbar-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .navbar-sub {
+      font-size: 0.7rem;
+      opacity: 0.8;
+      font-weight: 500;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 0.25rem;
+      height: 100%;
+      align-self: stretch;
+    }
+
+    .nav-tab {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0 1.25rem;
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border-bottom: 3px solid transparent;
+      transition: all 0.25s ease;
+    }
+
+    .nav-tab:hover {
+      color: white;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .nav-tab.active {
+      color: white;
+      border-bottom-color: white;
+    }
+
+    .btn-logout {
+      background: rgba(255, 255, 255, 0.15);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      color: white;
+      padding: 0.45rem 1.2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.82rem;
+      transition: all 0.3s ease;
+    }
+
+    .btn-logout:hover {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.7);
+      transform: translateY(-1px);
+    }
+
+    /* ===== MAIN ===== */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    .page-heading {
+      margin-bottom: 2rem;
+    }
+
+    .page-heading h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.25rem;
+    }
+
+    .page-heading p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* ===== REGISTRATIONS LIST ===== */
+    .reg-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .reg-card {
+      background: var(--bg-white);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-light);
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      transition: all 0.3s ease;
+      animation: slideUp 0.5s ease-out;
+    }
+
+    .reg-card:hover {
+      border-color: var(--accent);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .reg-thumb {
+      width: 64px;
+      height: 64px;
+      border-radius: 10px;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: #e2e8f0;
+    }
+
+    .reg-thumb-placeholder {
+      width: 64px;
+      height: 64px;
+      border-radius: 10px;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #e2e8f0, #f1f5f9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .reg-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .reg-info h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .reg-info .reg-institute {
+      font-size: 0.8rem;
+      color: var(--primary-light);
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .reg-info .reg-dates {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .reg-status {
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      flex-shrink: 0;
+      letter-spacing: 0.3px;
+    }
+
+    .reg-status.registered { background: #dbeafe; color: var(--primary-dark); }
+    .reg-status.participated { background: #d1fae5; color: #065f46; }
+    .reg-status.shortlisted { background: #fef3c7; color: #92400e; }
+    .reg-status.winner { background: #ede9fe; color: #5b21b6; }
+
+    .reg-mentor {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+    }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 1.5rem;
+      color: var(--text-muted);
+    }
+
+    .empty-state-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    .empty-state p {
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    .empty-state a {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.6rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-decoration: none;
+      background: linear-gradient(135deg, var(--primary-light), var(--accent));
+      color: white;
+      transition: all 0.3s;
+    }
+
+    .empty-state a:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(30, 64, 175, 0.3);
+    }
+
+    /* ===== STATUS CONTROLS ===== */
+    .reg-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: flex-end;
+      flex-shrink: 0;
+    }
+
+    .status-select {
+      padding: 0.35rem 0.6rem;
+      border-radius: 8px;
+      border: 2px solid var(--border-light);
+      font-size: 0.78rem;
+      font-weight: 600;
+      background: white;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.2s;
+      min-width: 130px;
+    }
+
+    .status-select:focus {
+      border-color: var(--accent);
+    }
+
+    .cert-upload-wrap {
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+    }
+
+    .cert-upload-wrap.hidden { display: none; }
+
+    .cert-input {
+      font-size: 0.72rem;
+      max-width: 140px;
+    }
+
+    .cert-link {
+      font-size: 0.72rem;
+      color: var(--primary-light);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .cert-link:hover { text-decoration: underline; }
+
+    .btn-save {
+      padding: 0.3rem 0.9rem;
+      border-radius: 6px;
+      border: none;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--primary-light), var(--accent));
+      color: white;
+      transition: all 0.25s;
+    }
+
+    .btn-save:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 10px rgba(30, 64, 175, 0.25);
+    }
+
+    .btn-save:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-saved {
+      padding: 0.3rem 0.9rem;
+      border-radius: 6px;
+      border: none;
+      font-size: 0.72rem;
+      font-weight: 700;
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    /* ===== TOAST ===== */
+    .toast {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      z-index: 200;
+      background: white;
+      border-radius: 10px;
+      padding: 0.9rem 1.4rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+      border-left: 4px solid var(--success);
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      transform: translateX(120%);
+      opacity: 0;
+      transition: transform 0.35s ease, opacity 0.35s ease;
+      max-width: 380px;
+    }
+
+    .toast.show {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    .toast-icon { font-size: 1.3rem; flex-shrink: 0; }
+
+    /* ===== FOOTER ===== */
+    .site-footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(148, 163, 184, 0.2);
+      margin-top: 1rem;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 700px) {
+      .navbar { padding: 0 1rem; flex-wrap: wrap; }
+      .navbar-left { gap: 0; width: 100%; }
+      .navbar-brand { padding: 0.6rem 0; }
+      .nav-tabs { width: 100%; }
+      .nav-tab { flex: 1; justify-content: center; padding: 0.75rem 0.5rem; font-size: 0.8rem; }
+      .btn-logout { margin: 0.5rem 0 0.5rem auto; }
+      .container { padding: 1.5rem 1rem; }
+      .reg-card { flex-wrap: wrap; }
+    }
+
+    @media (max-width: 500px) {
+      .reg-card { flex-direction: column; align-items: stretch; text-align: center; }
+      .reg-thumb, .reg-thumb-placeholder { width: 100%; height: 140px; }
+      .reg-status { align-self: center; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar">
+    <div class="navbar-left">
+      <a href="/dashboard" class="navbar-brand">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+        <div>
+          <div class="navbar-title">Agni PRIDE</div>
+          <div class="navbar-sub">Student</div>
+        </div>
+      </a>
+      <div class="nav-tabs">
+        <a href="/dashboard" class="nav-tab">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+          </svg>
+          Hackathons
+        </a>
+        <a href="/registrations" class="nav-tab active">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 11l3 3L22 4"/>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+          </svg>
+          My Registrations
+        </a>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="logout()">Logout</button>
+  </nav>
+
+  <!-- ===== MAIN ===== -->
+  <div class="container">
+    <div class="page-heading">
+      <h1>My Registrations</h1>
+      <p>Hackathons you've signed up for</p>
+    </div>
+
+    <div class="reg-list" id="reg-list">
+      <div class="empty-state" id="reg-empty">
+        <div class="empty-state-icon">📝</div>
+        <p>You haven't registered for any hackathons yet.</p>
+        <a href="/dashboard">Browse Hackathons</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TOAST ===== -->
+  <div class="toast" id="toast">
+    <span class="toast-icon">✅</span>
+    <span id="toast-msg">Updated successfully!</span>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Agni AI DS &mdash; Built by Raj G.
+  </footer>
+
+  <script>
+    function showToast(msg) {
+      const el = document.getElementById('toast');
+      document.getElementById('toast-msg').textContent = msg;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 3500);
+    }
+
+    function statusChanged(select, id) {
+      const wrapper = select.closest('.reg-card').querySelector('.cert-upload-wrap');
+      const val = select.value;
+      if (val === 'winner' || val === 'participated') {
+        wrapper.classList.remove('hidden');
+      } else {
+        wrapper.classList.add('hidden');
+      }
+    }
+
+    async function saveRegistration(btn) {
+      const card = btn.closest('.reg-card');
+      const id = card.dataset.id;
+      const select = card.querySelector('.status-select');
+      const fileInput = card.querySelector('.cert-input');
+      const certLink = card.querySelector('.cert-link');
+      const status = select.value;
+
+      if (status === 'winner' || status === 'participated') {
+        const hasExisting = certLink && certLink.href;
+        if (!fileInput.files[0] && !hasExisting) {
+          alert('Upload your certificate as a proof for ' + status + ' status.');
+          return;
+        }
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Saving…';
+
+      const formData = new FormData();
+      formData.append('status', status);
+      if ((status === 'winner' || status === 'participated') && fileInput.files[0]) {
+        formData.append('certificate', fileInput.files[0]);
+      }
+
+      try {
+        const res = await fetch('/api/registrations/' + id, {
+          method: 'PUT',
+          body: formData
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          alert(data.error || 'Save failed');
+          btn.disabled = false;
+          btn.textContent = 'Save';
+          return;
+        }
+
+        btn.disabled = false;
+        btn.textContent = 'Saved ✓';
+        btn.classList.add('btn-saved');
+        setTimeout(() => {
+          btn.classList.remove('btn-saved');
+          btn.textContent = 'Save';
+        }, 2500);
+
+        const badge = card.querySelector('.reg-status');
+        badge.className = 'reg-status ' + status;
+        badge.textContent = status;
+
+        showToast('Status updated to ' + status);
+      } catch (err) {
+        alert(err.message || 'Something went wrong');
+        btn.disabled = false;
+        btn.textContent = 'Save';
+      }
+    }
+
+    async function loadRegistrations() {
+      try {
+        const res = await fetch('/api/registrations');
+        const registrations = await res.json();
+        const list = document.getElementById('reg-list');
+
+        if (registrations.length === 0) return;
+
+        document.getElementById('reg-empty').style.display = 'none';
+
+        const statuses = ['registered', 'participated', 'shortlisted', 'winner'];
+
+        list.innerHTML = registrations.map(r => {
+          const h = r.hackathon || {};
+          const thumb = h.posterImage
+            ? `<img class="reg-thumb" src="${h.posterImage}" alt="${h.title}">`
+            : `<div class="reg-thumb-placeholder">📋</div>`;
+
+          const mentorHtml = r.mentorName
+            ? `<div class="reg-mentor">👤 Mentor: ${r.mentorName}</div>`
+            : '';
+
+          const optionsHtml = statuses.map(s =>
+            `<option value="${s}"${s === r.status ? ' selected' : ''}>${s}</option>`
+          ).join('');
+
+          const showCert = r.status === 'winner' || r.status === 'participated';
+          const certHtml = r.certificate
+            ? `<a href="${r.certificate}" target="_blank" class="cert-link">📄 View Cert</a>`
+            : '';
+
+          return `
+            <div class="reg-card" data-id="${r.id}">
+              ${thumb}
+              <div class="reg-info">
+                <h3>${h.title || 'Unknown'}</h3>
+                <div class="reg-institute">${h.institute || ''}</div>
+                <div class="reg-dates">${h.startDate || '—'} – ${h.deadline || '—'}</div>
+                ${mentorHtml}
+              </div>
+              <div class="reg-actions">
+                <select class="status-select" onchange="statusChanged(this, ${r.id})">
+                  ${optionsHtml}
+                </select>
+                <div class="cert-upload-wrap${showCert ? '' : ' hidden'}">
+                  ${certHtml}
+                  <input type="file" class="cert-input" accept="image/*,.pdf">
+                </div>
+                <button class="btn-save" onclick="saveRegistration(this)">Save</button>
+              </div>
+            </div>`;
+        }).join('');
+
+      } catch (err) {
+        document.getElementById('reg-list').innerHTML =
+          '<div class="empty-state"><p style="color:#991b1b;">Failed to load registrations.</p></div>';
+      }
+    }
+
+    async function logout() {
+      await fetch('/api/logout', { method: 'POST' });
+      window.location.href = '/login';
+    }
+
+    loadRegistrations();
+  </script>
+
+</body>
+</html>

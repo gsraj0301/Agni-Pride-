@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en">
 
@@ -56,7 +55,7 @@
       color: var(--text-dark);
       padding: 1.5rem;
       line-height: 1.6;
-      display: flex;  
+      display: flex;
       position: relative;
       min-height: 100vh;
     }
@@ -462,14 +461,6 @@
       <!-- Registration form with all required fields -->
       <form class="-form">
 
-        <script>
-          const urlParams = new URLSearchParams(window.location.search);
-          if (urlParams.has('error')) {
-            const errorDiv = document.getElementById('error-msg');
-            errorDiv.textContent = urlParams.get('error');
-            errorDiv.style.display = 'block';
-          }
-        </script>
 
         <div class="form-group">
           <label for="name" class="form-label">Full Name</label>
@@ -505,8 +496,13 @@
         </div>
         <div class="form-group">
           <label for="year" class="form-label">Year</label>
-          <input type="number" id="year" name="year" class="form-input" placeholder="Enter your Year" required
-            autocomplete="year">
+          <select id="year" name="year" class="form-select" required>
+            <option value="">Select your year</option>
+            <option value="1">1st Year</option>
+            <option value="2">2nd Year</option>
+            <option value="3">3rd Year</option>
+            <option value="4">4th Year</option>
+          </select>
         </div>
         <!-- Password input group -->
         <div class="form-group">
@@ -516,7 +512,7 @@
         </div>
 
         <!--  button with gradient background and hover effects -->
-        <button type="submit" class="btn-"></button>
+        <button type="submit" class="btn-">Create Account</button>
       </form>
 
       <!-- Footer section with login link -->
@@ -533,59 +529,70 @@
     </footer>
   </div>
   <script>
-      let final_email = document.getElementById('email').value.toLowerCase().split('@');
-      const _btn=document.querySelector(".btn-");
-      _btn.addEventListener('click', (e) => {
-        // e.preventDefault();
-      console.log(final_email);
-      if (final_email[1] !== 'act.edu.in') {
-        alert('Please enter a valid email');
-        
-      }
-      });
-  (function () {
-    const form = document.querySelector('.-form');
-    const yearField = document.getElementById('year');
     const errorDiv = document.getElementById('error-msg');
 
-    if (!form || !yearField) return;
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('error')) {
+      errorDiv.textContent = urlParams.get('error');
+      errorDiv.style.display = 'block';
+    }
 
-    form.addEventListener('submit', function (e) {
-      // Read and normalize the year value
-      const raw = (yearField.value || '').trim();
+    document.querySelector('.-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
 
-      // If you are using a plain year number like "2026"
-      const year = parseInt(raw, 10);
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim().toLowerCase();
+      const department = document.getElementById('department').value;
+      const year = document.getElementById('year').value;
+      const password = document.getElementById('password').value;
 
-      const currentYear = new Date().getFullYear();
-      const maxYear = currentYear + 4;
-
-      // Basic numeric checks
-      if (Number.isNaN(year)) {
-        e.preventDefault();
-        if (errorDiv) {
-          errorDiv.textContent = 'Please enter a valid year (e.g., ' + currentYear + ').';
-          errorDiv.style.display = 'block';
-        } else {
-          alert('Please enter a valid year.');
-        }
+      if (!email.endsWith('@act.edu.in')) {
+        errorDiv.textContent = 'Only Agni College email addresses are allowed.';
+        errorDiv.style.display = 'block';
         return;
       }
 
-      // College rule: no more than 4 years ahead
-      if (year < currentYear || year > maxYear) {
-        e.preventDefault();
-        if (errorDiv) {
-          errorDiv.textContent =
-            'Year must be between ' + currentYear + ' and ' + maxYear + '.';
+      if (password.length < 8) {
+        errorDiv.textContent = 'Password must be at least 8 characters.';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      if (!department) {
+        errorDiv.textContent = 'Please select your department.';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      if (!year) {
+        errorDiv.textContent = 'Please select your year.';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      errorDiv.style.display = 'none';
+
+      try {
+        const response = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, department, year, password })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          errorDiv.textContent = data.error || 'Registration failed.';
           errorDiv.style.display = 'block';
-        } else {
-          alert('Year must be between ' + currentYear + ' and ' + maxYear + '.');
+          return;
         }
+
+        window.location.href = data.redirect || '/login';
+      } catch (err) {
+        errorDiv.textContent = 'Something went wrong. Please try again.';
+        errorDiv.style.display = 'block';
       }
     });
-   })();
-   
   </script>
 </body>
 

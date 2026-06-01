@@ -1,0 +1,917 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel — Agni PRIDE</title>
+
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --primary-light: #2563eb;
+      --primary-dark: #1e3a8a;
+      --accent: #0ea5e9;
+      --accent-light: #06b6d4;
+      --success: #16a34a;
+      --text-dark: #0f172a;
+      --text-light: #f8fafc;
+      --text-muted: #64748b;
+      --bg-white: #ffffff;
+      --bg-soft: #f8fafc;
+      --bg-page: #e5edf7;
+      --border-light: rgba(15, 23, 42, 0.08);
+      --border-input: rgba(15, 23, 42, 0.16);
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
+      --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.12);
+      --shadow-lg: 0 18px 40px rgba(15, 23, 42, 0.16);
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body { height: 100%; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background: linear-gradient(135deg, #e5edf7 0%, #e0e7ff 45%, #f5f5fb 100%);
+      color: var(--text-dark);
+      line-height: 1.6;
+      position: relative;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* ===== NAVBAR ===== */
+    .navbar {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--accent) 100%);
+      color: white;
+      padding: 0 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-md);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      min-height: 60px;
+    }
+
+    .navbar-left {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-decoration: none;
+      color: white;
+    }
+
+    .navbar-brand svg { flex-shrink: 0; }
+
+    .navbar-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .navbar-sub {
+      font-size: 0.7rem;
+      opacity: 0.8;
+      font-weight: 500;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 0.25rem;
+      height: 100%;
+      align-self: stretch;
+    }
+
+    .nav-tab {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0 1.25rem;
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border-bottom: 3px solid transparent;
+      transition: all 0.25s ease;
+    }
+
+    .nav-tab:hover {
+      color: white;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .nav-tab.active {
+      color: white;
+      border-bottom-color: white;
+    }
+
+    .btn-logout {
+      background: rgba(255, 255, 255, 0.15);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      color: white;
+      padding: 0.45rem 1.2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.82rem;
+      transition: all 0.3s ease;
+    }
+
+    .btn-logout:hover {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.7);
+      transform: translateY(-1px);
+    }
+
+    /* ===== LAYOUT ===== */
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 1rem;
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    /* ===== CARDS ===== */
+    .card {
+      background: var(--bg-white);
+      border-radius: var(--radius);
+      padding: 2rem 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid rgba(148, 163, 184, 0.15);
+      animation: slideUp 0.5s ease-out;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.75rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--border-light);
+    }
+
+    .card-header h2 {
+      margin: 0;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+    }
+
+    .card-header svg {
+      flex-shrink: 0;
+    }
+
+    /* ===== FORM ===== */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      letter-spacing: 0.2px;
+    }
+
+    input, textarea, select {
+      padding: 0.8rem 1rem;
+      border: 2px solid var(--border-input);
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      color: var(--text-dark);
+      background: var(--bg-white);
+      transition: all 0.3s ease;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      background: var(--bg-soft);
+    }
+
+    input::placeholder, textarea::placeholder {
+      color: var(--text-muted);
+      opacity: 0.7;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231e40af' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      padding-right: 2.5rem;
+      cursor: pointer;
+    }
+
+    input[type="file"] {
+      padding: 0.6rem 1rem;
+      cursor: pointer;
+    }
+
+    input[type="file"]::file-selector-button {
+      padding: 0.4rem 1rem;
+      border: none;
+      border-radius: 6px;
+      background: var(--primary-light);
+      color: white;
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+      margin-right: 0.75rem;
+      transition: background 0.2s;
+    }
+
+    input[type="file"]::file-selector-button:hover {
+      background: var(--primary-dark);
+    }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+      padding: 0.85rem 2rem;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--primary-light) 0%, var(--accent) 100%);
+      color: var(--bg-white);
+      box-shadow: var(--shadow-md);
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 0; height: 0;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 28px rgba(30, 64, 175, 0.35);
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--accent-light) 100%);
+    }
+
+    .btn:active { transform: translateY(-1px); }
+    .btn:active::before { width: 300px; height: 300px; }
+
+    .btn-sm {
+      padding: 0.45rem 1rem;
+      font-size: 0.8rem;
+      text-transform: none;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #dc2626, #ef4444);
+    }
+
+    .btn-danger:hover {
+      background: linear-gradient(135deg, #b91c1c, #dc2626);
+      box-shadow: 0 8px 20px rgba(220, 38, 38, 0.35);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--border-input);
+      color: var(--text-dark);
+      box-shadow: none;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--primary-light);
+      color: var(--primary-light);
+      background: var(--bg-soft);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* ===== MESSAGES ===== */
+    .msg {
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: none;
+      animation: slideInDown 0.3s ease-out;
+    }
+
+    .msg-error {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+    }
+
+    .msg-success {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #166534;
+    }
+
+    /* ===== HACKATHON LIST ===== */
+    .hackathon-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .hackathon-item {
+      background: var(--bg-soft);
+      border: 1px solid var(--border-light);
+      border-radius: 10px;
+      padding: 1.25rem;
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      transition: all 0.3s ease;
+    }
+
+    .hackathon-item:hover {
+      border-color: rgba(37, 99, 235, 0.2);
+      box-shadow: var(--shadow-sm);
+      transform: translateY(-1px);
+    }
+
+    .hackathon-thumb {
+      width: 80px;
+      height: 60px;
+      border-radius: 8px;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: #e2e8f0;
+    }
+
+    .hackathon-thumb-placeholder {
+      width: 80px;
+      height: 60px;
+      border-radius: 8px;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #e2e8f0, #f1f5f9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+    }
+
+    .hackathon-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .hackathon-info h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 0.3rem;
+    }
+
+    .hackathon-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .hackathon-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .hackathon-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .hackathon-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      background: #dbeafe;
+      color: var(--primary-dark);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-muted);
+    }
+
+    .empty-state svg {
+      margin-bottom: 1rem;
+      opacity: 0.4;
+    }
+
+    .empty-state p {
+      font-size: 0.95rem;
+    }
+
+    /* ===== FOOTER ===== */
+    .site-footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(148, 163, 184, 0.25);
+      margin-top: 2rem;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes slideInDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 700px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card {
+        padding: 1.5rem;
+      }
+
+      .hackathon-item {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .hackathon-thumb,
+      .hackathon-thumb-placeholder {
+        width: 100%;
+        height: 140px;
+      }
+
+      .hackathon-actions {
+        margin-top: 0.5rem;
+      }
+
+      .navbar {
+        padding: 0 1rem;
+        flex-wrap: wrap;
+      }
+
+      .navbar-left {
+        gap: 0;
+        width: 100%;
+      }
+
+      .navbar-brand {
+        padding: 0.6rem 0;
+      }
+
+      .nav-tabs {
+        width: 100%;
+      }
+
+      .nav-tab {
+        flex: 1;
+        justify-content: center;
+        padding: 0.75rem 0.5rem;
+        font-size: 0.8rem;
+      }
+
+      .btn-logout {
+        margin: 0.5rem 0 0.5rem auto;
+      }
+
+      .container {
+        padding: 1rem;
+      }
+
+      .navbar-sub {
+        display: none;
+      }
+    }
+
+    @media (min-width: 700px) and (max-width: 1000px) {
+      .container {
+        padding: 1.5rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar">
+    <div class="navbar-left">
+      <a href="/admin" class="navbar-brand">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+        <div>
+          <div class="navbar-title">Agni PRIDE</div>
+          <div class="navbar-sub">Admin Panel</div>
+        </div>
+      </a>
+      <div class="nav-tabs">
+        <a href="/admin" class="nav-tab" data-tab="post">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/>
+          </svg>
+          Post
+        </a>
+        <a href="/admin/dashboard" class="nav-tab" data-tab="dashboard">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+          </svg>
+          Dashboard
+        </a>
+        <a href="/admin/coordinators" class="nav-tab" data-tab="coordinators">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          Coordinators
+        </a>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="logout()">Logout</button>
+  </nav>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <div class="container">
+
+    <!-- Post Hackathon -->
+    <div class="card" id="form-card">
+      <div class="card-header">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1e3a8a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 8v8"/>
+          <path d="M8 12h8"/>
+        </svg>
+        <h2 id="form-title">Post a Hackathon</h2>
+      </div>
+
+      <div id="error-msg" class="msg msg-error"></div>
+      <div id="success-msg" class="msg msg-success"></div>
+
+      <form id="hackathon-form" enctype="multipart/form-data">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Hackathon Title</label>
+            <input type="text" id="title" placeholder="e.g. Smart India Hackathon 2025" required>
+          </div>
+
+          <div class="form-group">
+            <label>Organizing Institute</label>
+            <input type="text" id="institute" placeholder="e.g. IIT Madras" required>
+          </div>
+
+          <div class="form-group full">
+            <label>Description</label>
+            <textarea id="description" rows="3" placeholder="Describe the hackathon, themes, prizes, etc..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Start Date</label>
+            <input type="date" id="startDate" required>
+          </div>
+
+          <div class="form-group">
+            <label>Registration Deadline</label>
+            <input type="date" id="deadline" required>
+          </div>
+
+          <div class="form-group">
+            <label>Team Size</label>
+            <input type="text" id="teamSize" placeholder="e.g. 2–4 or Max 5">
+          </div>
+
+          <div class="form-group">
+            <label>Hackathon Poster</label>
+            <input type="file" id="posterImage" accept="image/*">
+          </div>
+        </div>
+
+        <div style="display:flex;gap:0.75rem;margin-top:1.5rem;">
+          <button type="submit" class="btn" id="form-submit-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 5v14"/>
+              <path d="M5 12h14"/>
+            </svg>
+            <span id="form-btn-text">Post Hackathon</span>
+          </button>
+          <button type="button" class="btn btn-outline" id="cancel-btn" style="display:none;" onclick="cancelEdit()">Cancel</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Posted Hackathons -->
+    <div class="card">
+      <div class="card-header">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1e3a8a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+        </svg>
+        <h2>Posted Hackathons</h2>
+      </div>
+
+      <div class="hackathon-list" id="hackathon-list">
+        <div class="empty-state">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+            <polyline points="13 2 13 9 20 9"/>
+          </svg>
+          <p>Loading...</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Agni AI DS &mdash; Built by Raj G.
+  </footer>
+
+  <script>
+    // Set active nav tab based on current URL
+    document.querySelectorAll('.nav-tab').forEach(function(tab) {
+      if (tab.href === window.location.href || tab.href === window.location.origin + window.location.pathname) {
+        tab.classList.add('active');
+      }
+    });
+
+    let editingId = null;
+
+    async function loadHackathons() {
+      try {
+        const res = await fetch('/api/hackathons');
+        const hackathons = await res.json();
+        const list = document.getElementById('hackathon-list');
+
+        if (hackathons.length === 0) {
+          list.innerHTML = `
+            <div class="empty-state">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+                <polyline points="13 2 13 9 20 9"/>
+              </svg>
+              <p>No hackathons posted yet. Create your first one above!</p>
+            </div>`;
+          return;
+        }
+
+        list.innerHTML = hackathons.map(h => {
+          const thumb = h.posterImage
+            ? `<img class="hackathon-thumb" src="${h.posterImage}" alt="${h.title}">`
+            : `<div class="hackathon-thumb-placeholder">📋</div>`;
+
+          const desc = h.description
+            ? `<div class="hackathon-desc">${h.description}</div>`
+            : '';
+
+          return `
+            <div class="hackathon-item">
+              ${thumb}
+              <div class="hackathon-info">
+                <h3>${h.title}</h3>
+                <div class="hackathon-meta">
+                  <span>🏛 ${h.institute}</span>
+                  <span>📅 Deadline: ${h.deadline}</span>
+                  <span>👥 Team: ${h.teamSize || 'N/A'}</span>
+                  <span class="badge">${h.startDate}</span>
+                </div>
+                ${desc}
+              </div>
+              <div class="hackathon-actions">
+                <button class="btn btn-sm btn-outline" onclick="editHackathon(${h.id})">Edit</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteHackathon(${h.id})">Delete</button>
+              </div>
+            </div>`;
+        }).join('');
+
+      } catch (err) {
+        document.getElementById('hackathon-list').innerHTML = `
+          <div class="empty-state">
+            <p style="color: #991b1b;">Failed to load hackathons. Try refreshing.</p>
+          </div>`;
+      }
+    }
+
+    async function editHackathon(id) {
+      try {
+        const res = await fetch('/api/hackathons');
+        const hackathons = await res.json();
+        const h = hackathons.find(x => x.id === id);
+        if (!h) return;
+
+        editingId = id;
+
+        document.getElementById('title').value = h.title;
+        document.getElementById('institute').value = h.institute;
+        document.getElementById('description').value = h.description || '';
+        document.getElementById('startDate').value = h.startDate;
+        document.getElementById('deadline').value = h.deadline;
+        document.getElementById('teamSize').value = h.teamSize || '';
+        document.getElementById('posterImage').value = '';
+
+        document.getElementById('form-title').textContent = 'Edit Hackathon';
+        document.getElementById('form-btn-text').textContent = 'Update Hackathon';
+        document.getElementById('cancel-btn').style.display = 'flex';
+
+        document.getElementById('form-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        document.getElementById('error-msg').style.display = 'none';
+        document.getElementById('success-msg').style.display = 'none';
+      } catch (err) {
+        showError('Failed to load hackathon details.');
+      }
+    }
+
+    function cancelEdit() {
+      editingId = null;
+      document.getElementById('hackathon-form').reset();
+      document.getElementById('form-title').textContent = 'Post a Hackathon';
+      document.getElementById('form-btn-text').textContent = 'Post Hackathon';
+      document.getElementById('cancel-btn').style.display = 'none';
+      document.getElementById('error-msg').style.display = 'none';
+      document.getElementById('success-msg').style.display = 'none';
+    }
+
+    async function deleteHackathon(id) {
+      if (!confirm('Delete this hackathon? This cannot be undone.')) return;
+
+      try {
+        const res = await fetch('/api/hackathons/' + id, { method: 'DELETE' });
+        const data = await res.json();
+
+        if (!res.ok) {
+          showError(data.error || 'Failed to delete.');
+          return;
+        }
+
+        if (editingId === id) cancelEdit();
+        loadHackathons();
+        showSuccess('Hackathon deleted.');
+      } catch (err) {
+        showError('Something went wrong.');
+      }
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('error-msg');
+      el.textContent = msg;
+      el.style.display = 'block';
+      document.getElementById('success-msg').style.display = 'none';
+    }
+
+    function showSuccess(msg) {
+      const el = document.getElementById('success-msg');
+      el.textContent = msg;
+      el.style.display = 'block';
+      document.getElementById('error-msg').style.display = 'none';
+    }
+
+    document.getElementById('hackathon-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const errorDiv = document.getElementById('error-msg');
+      const successDiv = document.getElementById('success-msg');
+      errorDiv.style.display = 'none';
+      successDiv.style.display = 'none';
+
+      const formData = new FormData();
+      formData.append('title', document.getElementById('title').value.trim());
+      formData.append('institute', document.getElementById('institute').value.trim());
+      formData.append('description', document.getElementById('description').value.trim());
+      formData.append('startDate', document.getElementById('startDate').value);
+      formData.append('deadline', document.getElementById('deadline').value);
+      formData.append('teamSize', document.getElementById('teamSize').value.trim());
+
+      const posterFile = document.getElementById('posterImage').files[0];
+      if (posterFile) formData.append('posterImage', posterFile);
+
+      try {
+        const url = editingId ? '/api/hackathons/' + editingId : '/api/hackathons';
+        const method = editingId ? 'PUT' : 'POST';
+        const res = await fetch(url, { method, body: formData });
+        const data = await res.json();
+
+        if (!res.ok) {
+          errorDiv.textContent = data.error || 'Operation failed.';
+          errorDiv.style.display = 'block';
+          return;
+        }
+
+        successDiv.textContent = editingId ? 'Hackathon updated successfully!' : 'Hackathon posted successfully!';
+        successDiv.style.display = 'block';
+        cancelEdit();
+        loadHackathons();
+      } catch (err) {
+        errorDiv.textContent = 'Something went wrong. Please try again.';
+        errorDiv.style.display = 'block';
+      }
+    });
+
+    async function logout() {
+      await fetch('/api/logout', { method: 'POST' });
+      window.location.href = '/login';
+    }
+
+    loadHackathons();
+  </script>
+
+</body>
+</html>

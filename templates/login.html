@@ -415,8 +415,11 @@
         <p class="login-subtitle">Welcome back to Agni Pride</p>
       </div>
 
+      <!-- Error Message Container -->
+      <div id="error-msg" class="flashes error" style="display:none;"></div>
+
       <!-- Login form: email and password inputs with submit button -->
-      <form class="login-form" action="/api/login" method="POST">
+      <form class="login-form">
 
         <!-- College email input group -->
         <div class="form-group">
@@ -449,6 +452,45 @@
       © 2026 Agni AI DS. Built by Raj G. All rights reserved.
     </footer>
   </div>
+  <script>
+    const errorDiv = document.getElementById('error-msg');
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('error')) {
+      errorDiv.textContent = urlParams.get('error');
+      errorDiv.style.display = 'block';
+    }
+
+    document.querySelector('.login-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value.trim().toLowerCase();
+      const password = document.getElementById('password').value;
+
+      errorDiv.style.display = 'none';
+
+      try {
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          errorDiv.textContent = data.error || 'Login failed.';
+          errorDiv.style.display = 'block';
+          return;
+        }
+
+        window.location.href = data.redirect || '/post';
+      } catch (err) {
+        errorDiv.textContent = 'Something went wrong. Please try again.';
+        errorDiv.style.display = 'block';
+      }
+    });
+  </script>
 </body>
 
 </html>

@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coordinator Dashboard — Agni PRIDE</title>
+
+  <style>
+    :root {
+      --primary: #1e40af;
+      --primary-light: #3b82f6;
+      --primary-dark: #1e3a8a;
+      --accent: #0ea5e9;
+      --success: #10b981;
+      --danger: #ef4444;
+      --text-dark: #0f172a;
+      --text-muted: #64748b;
+      --bg-white: #ffffff;
+      --bg-soft: #f8fafc;
+      --border-light: rgba(15, 23, 42, 0.08);
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+      --shadow-md: 0 4px 12px rgba(30, 64, 175, 0.12);
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { min-height: 100%; overflow-x: hidden; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f0e7ff 100%);
+      color: var(--text-dark);
+      line-height: 1.5;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* ===== NAVBAR ===== */
+    .navbar {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--accent) 100%);
+      color: white;
+      padding: 0 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-md);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      min-height: 60px;
+    }
+
+    .navbar-left { display: flex; align-items: center; gap: 0.6rem; }
+
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-decoration: none;
+      color: white;
+    }
+
+    .navbar-title { font-size: 1.1rem; font-weight: 700; }
+    .navbar-sub { font-size: 0.7rem; opacity: 0.8; font-weight: 500; }
+
+    .btn-logout {
+      background: rgba(255, 255, 255, 0.15);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      color: white;
+      padding: 0.45rem 1.2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.82rem;
+      transition: all 0.3s ease;
+    }
+
+    .btn-logout:hover {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.7);
+      transform: translateY(-1px);
+    }
+
+    /* ===== MAIN ===== */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    /* ===== HEADER ===== */
+    .page-header {
+      margin-bottom: 2rem;
+      animation: slideInDown 0.6s ease-out;
+    }
+
+    .page-header h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.3rem;
+    }
+
+    .page-header .subtitle {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .page-header .dept-badge {
+      display: inline-block;
+      padding: 0.2rem 0.7rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      background: #dbeafe;
+      color: var(--primary-dark);
+    }
+
+    /* ===== STATS ROW ===== */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--bg-white);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-light);
+      text-align: center;
+      animation: slideUp 0.5s ease-out;
+    }
+
+    .stat-card:hover {
+      border-color: var(--accent);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-label {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-top: 0.25rem;
+    }
+
+    .stat-status-list {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 0.4rem;
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .stat-status-list span {
+      padding: 0.1rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    /* ===== TABLE CARD ===== */
+    .table-card {
+      background: var(--bg-white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-light);
+      overflow: hidden;
+      animation: slideUp 0.6s ease-out;
+    }
+
+    .table-header {
+      padding: 1.1rem 1.5rem;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .table-header h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .table-count {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      background: var(--bg-soft);
+      padding: 0.2rem 0.7rem;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+
+    .coord-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .coord-table th {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      background: var(--bg-soft);
+      border-bottom: 2px solid var(--border-light);
+    }
+
+    .coord-table td {
+      padding: 0.7rem 1rem;
+      font-size: 0.88rem;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .coord-table tr:last-child td { border-bottom: none; }
+    .coord-table tr:hover td { background: rgba(59, 130, 246, 0.03); }
+
+    .student-name {
+      font-weight: 700;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .student-name .email {
+      font-weight: 400;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.65rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .status-badge.registered { background: #dbeafe; color: var(--primary-dark); }
+    .status-badge.participated { background: #d1fae5; color: #065f46; }
+    .status-badge.shortlisted { background: #fef3c7; color: #92400e; }
+    .status-badge.winner { background: #ede9fe; color: #5b21b6; }
+
+    .cert-link {
+      color: var(--primary-light);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.82rem;
+    }
+
+    .cert-link:hover { text-decoration: underline; }
+
+    .no-cert {
+      color: var(--text-muted);
+      font-size: 0.78rem;
+    }
+
+    .year-badge {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      background: #f1f5f9;
+      color: var(--text-dark);
+    }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 1.5rem;
+      color: var(--text-muted);
+    }
+
+    .empty-state-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.5; }
+    .empty-state p { font-size: 1rem; font-weight: 500; }
+
+    /* ===== TOAST ===== */
+    .toast {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      z-index: 200;
+      background: white;
+      border-radius: 10px;
+      padding: 0.9rem 1.4rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+      border-left: 4px solid var(--success);
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      transform: translateX(120%);
+      opacity: 0;
+      transition: transform 0.35s ease, opacity 0.35s ease;
+      max-width: 380px;
+    }
+
+    .toast.show { transform: translateX(0); opacity: 1; }
+    .toast-icon { font-size: 1.3rem; flex-shrink: 0; }
+
+    /* ===== LOADING ===== */
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-muted);
+    }
+
+    .loading .spinner {
+      display: inline-block;
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--border-light);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-bottom: 0.75rem;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ===== FOOTER ===== */
+    .site-footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(148, 163, 184, 0.2);
+      margin-top: 1rem;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 800px) {
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      .container { padding: 1.5rem 1rem; }
+    }
+
+    @media (max-width: 600px) {
+      .stats-row { grid-template-columns: 1fr; }
+      .navbar { padding: 0 1rem; }
+      .coord-table { font-size: 0.82rem; }
+      .coord-table th, .coord-table td { padding: 0.5rem 0.6rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar">
+    <div class="navbar-left">
+      <div class="navbar-brand">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+        <div>
+          <div class="navbar-title">Agni PRIDE</div>
+          <div class="navbar-sub" id="nav-sub">Coordinator</div>
+        </div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="logout()">Logout</button>
+  </nav>
+
+  <!-- ===== MAIN ===== -->
+  <div class="container">
+
+    <div class="page-header">
+      <h1 id="page-title">Department Registrations</h1>
+      <div class="subtitle" id="page-subtitle">
+        <span id="welcome-text">Welcome</span>
+        <span class="dept-badge" id="dept-badge">—</span>
+      </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="stats-row" id="stats-row">
+      <div class="stat-card">
+        <div class="stat-number" id="stat-total">—</div>
+        <div class="stat-label">Total Registrations</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="stat-students">—</div>
+        <div class="stat-label">Unique Students</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="stat-by-status">—</div>
+        <div class="stat-label">By Status</div>
+        <div class="stat-status-list" id="stat-status-detail"></div>
+      </div>
+    </div>
+
+    <!-- Registrations Table -->
+    <div class="table-card">
+      <div class="table-header">
+        <h2>Student Registrations</h2>
+        <span class="table-count" id="reg-count">0</span>
+      </div>
+      <div id="table-body">
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Loading registrations…</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== TOAST ===== -->
+  <div class="toast" id="toast">
+    <span class="toast-icon">✅</span>
+    <span id="toast-msg">Loaded!</span>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Agni AI DS &mdash; Built by Raj G.
+  </footer>
+
+  <script>
+    function showToast(msg) {
+      var el = document.getElementById('toast');
+      document.getElementById('toast-msg').textContent = msg;
+      el.classList.add('show');
+      setTimeout(function() { el.classList.remove('show'); }, 3500);
+    }
+
+    function statusBadgeHTML(status) {
+      return '<span class="status-badge ' + status + '">' + status + '</span>';
+    }
+
+    async function loadDashboard() {
+      try {
+        // Get user session info
+        var meRes = await fetch('/api/me');
+        var me = await meRes.json();
+
+        document.getElementById('nav-sub').textContent = 'Coordinator — ' + me.department.toUpperCase();
+        document.getElementById('page-title').textContent = me.department + ' Department — Registrations';
+        document.getElementById('welcome-text').textContent = 'Welcome, ' + me.name;
+        document.getElementById('dept-badge').textContent = me.department;
+
+        // Get registrations for this department
+        var regRes = await fetch('/api/coordinator/registrations');
+        var registrations = await regRes.json();
+        var container = document.getElementById('table-body');
+
+        if (registrations.length === 0) {
+          container.innerHTML =
+            '<div class="empty-state">' +
+              '<div class="empty-state-icon">📋</div>' +
+              '<p>No registrations from your department yet.</p>' +
+            '</div>';
+
+          document.getElementById('stat-total').textContent = '0';
+          document.getElementById('stat-students').textContent = '0';
+          document.getElementById('stat-by-status').textContent = '0';
+          document.getElementById('reg-count').textContent = '0';
+          return;
+        }
+
+        // Stats
+        document.getElementById('stat-total').textContent = registrations.length;
+        document.getElementById('reg-count').textContent = registrations.length;
+
+        var uniqueStudents = new Set(registrations.map(function(r) { return r.student.email; })).size;
+        document.getElementById('stat-students').textContent = uniqueStudents;
+
+        var statusCounts = {};
+        registrations.forEach(function(r) {
+          statusCounts[r.status] = (statusCounts[r.status] || 0) + 1;
+        });
+
+        var statusLabels = { registered: 'Registered', participated: 'Participated', shortlisted: 'Shortlisted', winner: 'Winner' };
+        var statusColors = { registered: '#dbeafe', participated: '#d1fae5', shortlisted: '#fef3c7', winner: '#ede9fe' };
+        var statusTextColors = { registered: '#1e3a8a', participated: '#065f46', shortlisted: '#92400e', winner: '#5b21b6' };
+
+        var statusKeys = Object.keys(statusCounts);
+        document.getElementById('stat-by-status').textContent = statusKeys.length;
+
+        var detailHtml = statusKeys.map(function(s) {
+          return '<span style="background:' + statusColors[s] + ';color:' + statusTextColors[s] + '">' +
+            statusLabels[s] + ': ' + statusCounts[s] + '</span>';
+        }).join('');
+        document.getElementById('stat-status-detail').innerHTML = detailHtml;
+
+        // Table
+        container.innerHTML =
+          '<table class="coord-table">' +
+            '<thead><tr>' +
+              '<th>Student</th>' +
+              '<th>Year</th>' +
+              '<th>Hackathon</th>' +
+              '<th>Status</th>' +
+              '<th>Mentor</th>' +
+              '<th>Certificate</th>' +
+            '</tr></thead>' +
+            '<tbody>' +
+            registrations.map(function(r) {
+              var s = r.student || {};
+              var h = r.hackathon || {};
+
+              var certHtml = r.certificate
+                ? '<a href="' + r.certificate + '" target="_blank" class="cert-link">📄 View</a>'
+                : '<span class="no-cert">—</span>';
+
+              return '<tr>' +
+                '<td><div class="student-name">' + (s.name || '—') + '<span class="email">' + (s.email || '') + '</span></div></td>' +
+                '<td><span class="year-badge">' + (s.year || '—') + '</span></td>' +
+                '<td>' + (h.title || '—') + '</td>' +
+                '<td>' + statusBadgeHTML(r.status) + '</td>' +
+                '<td>' + (r.mentorName || '—') + '</td>' +
+                '<td>' + certHtml + '</td>' +
+              '</tr>';
+            }).join('') +
+            '</tbody>' +
+          '</table>';
+
+        showToast('Loaded ' + registrations.length + ' registrations');
+
+      } catch (err) {
+        document.getElementById('table-body').innerHTML =
+          '<div class="empty-state"><p style="color:#991b1b;">Failed to load dashboard data.</p></div>';
+      }
+    }
+
+    async function logout() {
+      await fetch('/api/logout', { method: 'POST' });
+      window.location.href = '/login';
+    }
+
+    loadDashboard();
+  </script>
+
+</body>
+</html>

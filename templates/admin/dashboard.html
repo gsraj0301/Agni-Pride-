@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Agni PRIDE</title>
+
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --primary-light: #2563eb;
+      --primary-dark: #1e3a8a;
+      --accent: #0ea5e9;
+      --accent-light: #06b6d4;
+      --success: #16a34a;
+      --warning: #d97706;
+      --text-dark: #0f172a;
+      --text-light: #f8fafc;
+      --text-muted: #64748b;
+      --bg-white: #ffffff;
+      --bg-soft: #f8fafc;
+      --border-light: rgba(15, 23, 42, 0.08);
+      --border-input: rgba(15, 23, 42, 0.16);
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
+      --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.12);
+      --shadow-lg: 0 18px 40px rgba(15, 23, 42, 0.16);
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body { height: 100%; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background: linear-gradient(135deg, #e5edf7 0%, #e0e7ff 45%, #f5f5fb 100%);
+      color: var(--text-dark);
+      line-height: 1.6;
+      position: relative;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* ===== NAVBAR ===== */
+    .navbar {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--accent) 100%);
+      color: white;
+      padding: 0 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-md);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      min-height: 60px;
+    }
+
+    .navbar-left {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-decoration: none;
+      color: white;
+    }
+
+    .navbar-brand svg { flex-shrink: 0; }
+
+    .navbar-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .navbar-sub {
+      font-size: 0.7rem;
+      opacity: 0.8;
+      font-weight: 500;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 0.25rem;
+      height: 100%;
+      align-self: stretch;
+    }
+
+    .nav-tab {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0 1.25rem;
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border-bottom: 3px solid transparent;
+      transition: all 0.25s ease;
+    }
+
+    .nav-tab:hover {
+      color: white;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .nav-tab.active {
+      color: white;
+      border-bottom-color: white;
+    }
+
+    .btn-logout {
+      background: rgba(255, 255, 255, 0.15);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      color: white;
+      padding: 0.45rem 1.2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.82rem;
+      transition: all 0.3s ease;
+    }
+
+    .btn-logout:hover {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.7);
+      transform: translateY(-1px);
+    }
+
+    /* ===== LAYOUT ===== */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    .page-heading {
+      margin-bottom: 1.5rem;
+      animation: slideInDown 0.4s ease-out;
+    }
+
+    .page-heading h1 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.25rem;
+    }
+
+    .page-heading p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* ===== STAT CARDS ===== */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--bg-white);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-md);
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      transition: all 0.3s ease;
+      animation: slideUp 0.5s ease-out;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .stat-card .stat-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-card .stat-value {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+      line-height: 1;
+    }
+
+    .stat-card .stat-icon {
+      float: right;
+      opacity: 0.15;
+    }
+
+    /* ===== CHARTS / TABLES ===== */
+    .section-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: var(--bg-white);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-md);
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      animation: slideUp 0.5s ease-out;
+    }
+
+    .card.full {
+      grid-column: 1 / -1;
+    }
+
+    .card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .bar-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .bar-label {
+      width: 100px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      flex-shrink: 0;
+      text-align: right;
+    }
+
+    .bar-track {
+      flex: 1;
+      height: 28px;
+      background: var(--bg-soft);
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 6px;
+      background: linear-gradient(90deg, var(--primary-light), var(--accent));
+      transition: width 0.8s ease-out;
+      display: flex;
+      align-items: center;
+      padding-left: 0.6rem;
+      min-width: fit-content;
+    }
+
+    .bar-fill span {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: white;
+      white-space: nowrap;
+    }
+
+    /* ===== TABLE ===== */
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    th {
+      text-align: left;
+      padding: 0.6rem 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      border-bottom: 2px solid var(--border-light);
+    }
+
+    td {
+      padding: 0.6rem 0.75rem;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: var(--bg-soft);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .badge-blue { background: #dbeafe; color: var(--primary-dark); }
+    .badge-green { background: #d1fae5; color: #065f46; }
+    .badge-purple { background: #ede9fe; color: #5b21b6; }
+    .badge-amber { background: #fef3c7; color: #92400e; }
+
+    /* ===== LOADING ===== */
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
+    /* ===== FOOTER ===== */
+    .site-footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(148, 163, 184, 0.25);
+      margin-top: 1rem;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes slideInDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .section-grid { grid-template-columns: 1fr; }
+      .navbar { padding: 0 1rem; flex-wrap: wrap; }
+      .navbar-left { gap: 0; width: 100%; }
+      .navbar-brand { padding: 0.6rem 0; }
+      .nav-tabs { width: 100%; }
+      .nav-tab { flex: 1; justify-content: center; padding: 0.75rem 0.5rem; font-size: 0.8rem; }
+      .btn-logout { margin: 0.5rem 0 0.5rem auto; }
+      .container { padding: 1rem; }
+      .stat-grid { grid-template-columns: repeat(2, 1fr); }
+      .bar-label { width: 70px; font-size: 0.75rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+
+    .dept-name {
+      text-transform: capitalize;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar">
+    <div class="navbar-left">
+      <a href="/admin" class="navbar-brand">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+        <div>
+          <div class="navbar-title">Agni PRIDE</div>
+          <div class="navbar-sub">Admin Panel</div>
+        </div>
+      </a>
+      <div class="nav-tabs">
+        <a href="/admin" class="nav-tab" data-tab="post">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/>
+          </svg>
+          Post
+        </a>
+        <a href="/admin/dashboard" class="nav-tab" data-tab="dashboard">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+          </svg>
+          Dashboard
+        </a>
+        <a href="/admin/coordinators" class="nav-tab" data-tab="coordinators">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          Coordinators
+        </a>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="logout()">Logout</button>
+  </nav>
+
+  <!-- ===== MAIN ===== -->
+  <div class="container">
+    <div class="page-heading">
+      <h1>Analytics Dashboard</h1>
+      <p>Overview of your Agni PRIDE community</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stat-grid" id="stat-cards">
+      <div class="stat-card"><div class="stat-label">Total Users</div><div class="stat-value" id="stat-users">—</div></div>
+      <div class="stat-card"><div class="stat-label">Total Hackathons</div><div class="stat-value" id="stat-hackathons">—</div></div>
+      <div class="stat-card"><div class="stat-label">Departments</div><div class="stat-value" id="stat-departments">—</div></div>
+      <div class="stat-card"><div class="stat-label">Year Levels</div><div class="stat-value" id="stat-years">—</div></div>
+    </div>
+
+    <!-- Charts -->
+    <div class="section-grid">
+
+      <!-- Users by Department -->
+      <div class="card">
+        <h3>Users by Department</h3>
+        <div id="dept-chart"><div class="loading">Loading...</div></div>
+      </div>
+
+      <!-- Users by Year -->
+      <div class="card">
+        <h3>Users by Year</h3>
+        <div id="year-chart"><div class="loading">Loading...</div></div>
+      </div>
+
+      <!-- Users by Role -->
+      <div class="card">
+        <h3>Users by Role</h3>
+        <div id="role-chart"><div class="loading">Loading...</div></div>
+      </div>
+
+      <!-- Recent Users -->
+      <div class="card">
+        <h3>Recent Registrations</h3>
+        <div id="recent-users"><div class="loading">Loading...</div></div>
+      </div>
+
+      <!-- Recent Hackathons -->
+      <div class="card full">
+        <h3>Recent Hackathons</h3>
+        <div id="recent-hackathons"><div class="loading">Loading...</div></div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Agni AI DS &mdash; Built by Raj G.
+  </footer>
+
+  <script>
+    document.querySelectorAll('.nav-tab').forEach(function(tab) {
+      if (tab.href === window.location.href || tab.href === window.location.origin + window.location.pathname) {
+        tab.classList.add('active');
+      }
+    });
+
+    async function loadDashboard() {
+      try {
+        const res = await fetch('/api/admin/stats');
+        const data = await res.json();
+
+        // Stat cards
+        document.getElementById('stat-users').textContent = data.totalUsers;
+        document.getElementById('stat-hackathons').textContent = data.totalHackathons;
+        document.getElementById('stat-departments').textContent = data.usersByDepartment.length;
+        document.getElementById('stat-years').textContent = data.usersByYear.length;
+
+        // Users by Department
+        renderBars('dept-chart', data.usersByDepartment, 'department', 'count');
+        renderBars('year-chart', data.usersByYear, 'year', 'count', 'Year ');
+        renderBars('role-chart', data.usersByRole, 'role', 'count', null, true);
+
+        // Recent Users
+        renderRecentUsers(data.recentUsers);
+
+        // Recent Hackathons
+        renderRecentHackathons(data.recentHackathons);
+
+      } catch (err) {
+        ['dept-chart', 'year-chart', 'role-chart', 'recent-users', 'recent-hackathons'].forEach(id => {
+          document.getElementById(id).innerHTML = '<p style="color:#991b1b;text-align:center;">Failed to load.</p>';
+        });
+      }
+    }
+
+    function renderBars(containerId, items, labelKey, valueKey, prefix, caps) {
+      const container = document.getElementById(containerId);
+      if (!items || items.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:1rem;">No data yet.</p>';
+        return;
+      }
+      const maxVal = Math.max(...items.map(i => Number(i[valueKey])));
+      container.innerHTML = '<div class="bar-list">' + items.map(item => {
+        const pct = (item[valueKey] / maxVal) * 100;
+        let label = caps ? (item[labelKey].charAt(0).toUpperCase() + item[labelKey].slice(1)) : item[labelKey];
+        if (prefix) label = prefix + label;
+        return `
+          <div class="bar-row">
+            <div class="bar-label">${label}</div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:${pct}%"><span>${item[valueKey]}</span></div>
+            </div>
+          </div>`;
+      }).join('') + '</div>';
+    }
+
+    function renderRecentUsers(users) {
+      const container = document.getElementById('recent-users');
+      if (!users || users.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:1rem;">No users yet.</p>';
+        return;
+      }
+      container.innerHTML = '<div class="table-wrap"><table><thead><tr><th>Name</th><th>Dept</th><th>Year</th><th>Role</th></tr></thead><tbody>' +
+        users.map(u => `
+          <tr>
+            <td><strong>${u.name}</strong><br><span style="font-size:0.75rem;color:var(--text-muted)">${u.email}</span></td>
+            <td class="dept-name">${u.department}</td>
+            <td>${u.year}</td>
+            <td><span class="badge ${u.role === 'admin' ? 'badge-purple' : u.role === 'coordinator' ? 'badge-amber' : 'badge-blue'}">${u.role}</span></td>
+          </tr>`).join('') +
+        '</tbody></table></div>';
+    }
+
+    function renderRecentHackathons(hackathons) {
+      const container = document.getElementById('recent-hackathons');
+      if (!hackathons || hackathons.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:1rem;">No hackathons yet.</p>';
+        return;
+      }
+      container.innerHTML = '<div class="table-wrap"><table><thead><tr><th>Title</th><th>Institute</th><th>Posted By</th><th>Deadline</th><th>Team</th></tr></thead><tbody>' +
+        hackathons.map(h => `
+          <tr>
+            <td><strong>${h.title}</strong></td>
+            <td>${h.institute}</td>
+            <td>${h.admin ? h.admin.name : '—'}</td>
+            <td>${h.deadline}</td>
+            <td>${h.teamSize || '—'}</td>
+          </tr>`).join('') +
+        '</tbody></table></div>';
+    }
+
+    async function logout() {
+      await fetch('/api/logout', { method: 'POST' });
+      window.location.href = '/login';
+    }
+
+    loadDashboard();
+  </script>
+
+</body>
+</html>
