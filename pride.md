@@ -112,6 +112,7 @@ Event/community dashboard for Agni College students. Express + Sequelize + MySQL
 - `requireAdmin` on `/admin` and `POST /api/hackathons` — OK
 - `httpOnly` session cookie — OK
 - Telemetry lines removed from `db.js` — OK
+- DB port configurable via `process.env.DB_PORT` (default 3306) — OK
 - **Issues remaining:**
   - `.env` tracked in git (needs `git rm --cached .env`)
   - No rate limiting on login
@@ -154,6 +155,7 @@ Event/community dashboard for Agni College students. Express + Sequelize + MySQL
 - 3-tab admin navbar (Post / Dashboard / Coordinators) with dynamic active state
 - Login redirect updated for coordinators (→ `/coordinator/dashboard`)
 - `year` field validation changed to `min: 0` to allow coordinators via `year: 0`
+- `DB_PORT` env var support added to `src/config/db.js` (defaults to 3306)
 
 ## What's Still Missing / TODO
 - `?department=` filter on `GET /api/hackathons`
